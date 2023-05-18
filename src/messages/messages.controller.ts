@@ -1,10 +1,12 @@
 import { SuscribeMessagesWeebhokQueryParams } from '@/core/interfaces/messages';
 import {
-  BadRequestException,
+  Body,
   Controller,
   Get,
+  HttpCode,
   HttpStatus,
   NotFoundException,
+  Post,
   Query,
   Res,
 } from '@nestjs/common';
@@ -38,5 +40,18 @@ export class MessagesController {
     }
 
     throw new NotFoundException();
+  }
+
+  @Post('/webhook')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async receiveMessage(@Body() body: any) {
+    console.log('METADATA');
+    console.log(body.entry[0].changes[0].value.metadata);
+
+    console.log('CONTACTS');
+    console.log(body.entry[0].changes[0].value.contacts);
+
+    console.log('MESSAGES');
+    console.log(body.entry[0].changes[0].value.messages);
   }
 }
