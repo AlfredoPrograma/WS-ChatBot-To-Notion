@@ -29,12 +29,12 @@ export class MessagesController {
     @Res() res: Response,
   ) {
     if (
-      queryParams['hub.mode'] === 'suscribe' &&
-      queryParams['hub.verify_token'] === this.suscriberToken
+      queryParams['hub_mode'] === 'suscribe' &&
+      queryParams['hub_verify_token'] === this.suscriberToken
     ) {
       res
         .setHeader('Content-Type', 'text/plain')
-        .send(queryParams['hub.challenge']);
+        .send(queryParams['hub_challenge']);
     }
 
     throw new NotFoundException();
