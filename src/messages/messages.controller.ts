@@ -17,10 +17,10 @@ export class MessagesController {
   @Get('/webhook')
   suscribe(@Query() queryParams: SuscribeMessagesWeebhokQueryParams) {
     if (
-      queryParams['hub.mode'] === 'suscribe' &&
-      queryParams['hub.verify_token'] === this.suscriberToken
+      queryParams['hub_mode'] === 'suscribe' &&
+      queryParams['hub_verify_token'] === this.suscriberToken
     ) {
-      return queryParams['hub.challenge'];
+      return queryParams['hub_challenge'];
     }
 
     throw new BadRequestException();
