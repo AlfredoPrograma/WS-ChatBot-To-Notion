@@ -2,6 +2,7 @@ import { SuscribeMessagesWeebhokQueryParams } from '@/core/interfaces/messages';
 import {
   Body,
   Controller,
+  ForbiddenException,
   Get,
   HttpCode,
   HttpStatus,
@@ -13,7 +14,7 @@ import {
 import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
-import { map, tap } from 'rxjs';
+import { catchError, map, tap } from 'rxjs';
 
 @Controller('messages')
 export class MessagesController {
@@ -45,26 +46,19 @@ export class MessagesController {
 
   @Post('/webhook')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async receiveMessage(@Body() body: any) {
-    console.log('METADATA');
-    console.log(body.entry[0].changes[0].value.metadata);
-
-    console.log('CONTACTS');
-    console.log(body.entry[0].changes[0].value.contacts);
-
-    console.log('MESSAGES');
-    console.log(body.entry[0].changes[0].value.messages);
-
-    this.httpService
-      .get('http://localhost:3001/api/v1/messages/health')
-      .pipe(tap((response) => console.log(response)));
-
-    this.httpService
+  async receiveMessage(@Body() body: any): Promise<any> {
+    console.log('Sending');
+    return this.httpService
       .post('http://localhost:3001/api/v1/messages', body, {
         headers: {
           'Content-Type': 'application/json',
         },
       })
-      .pipe(tap((response) => console.log(response)));
+      .pipe(map(() => console.log('Sent')))
+      .pipe(
+        catchError(() => {
+          throw new ForbiddenException();
+        }),
+      );
   }
 }
