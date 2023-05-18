@@ -56,6 +56,10 @@ export class MessagesController {
     console.log(body.entry[0].changes[0].value.messages);
 
     this.httpService
+      .get('http://localhost:3001/api/v1/messages/health')
+      .pipe(tap((response) => console.log(response)));
+
+    this.httpService
       .post('http://localhost:3001/api/v1/messages', body, {
         headers: {
           'Content-Type': 'application/json',
