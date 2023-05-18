@@ -29,7 +29,7 @@ export class MessagesController {
     @Res() res: Response,
   ) {
     if (
-      queryParams['hub_mode'] === 'suscribe' &&
+      queryParams['hub_mode'] === 'subscribe' &&
       queryParams['hub_verify_token'] === this.suscriberToken
     ) {
       res
