@@ -1,5 +1,13 @@
 import { SuscribeMessagesWeebhokQueryParams } from '@/core/interfaces/messages';
-import { BadRequestException, Controller, Get, Query } from '@nestjs/common';
+import {
+  BadRequestException,
+  Controller,
+  Get,
+  HttpStatus,
+  Query,
+  Res,
+} from '@nestjs/common';
+import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { MessagesService } from './messages.service';
 
@@ -15,12 +23,17 @@ export class MessagesController {
   }
 
   @Get('/webhook')
-  suscribe(@Query() queryParams: SuscribeMessagesWeebhokQueryParams) {
+  suscribe(
+    @Query() queryParams: SuscribeMessagesWeebhokQueryParams,
+    @Res() res: Response,
+  ) {
     if (
-      queryParams['hub_mode'] === 'suscribe' &&
-      queryParams['hub_verify_token'] === this.suscriberToken
+      queryParams['hub.mode'] === 'suscribe' &&
+      queryParams['hub.verify_token'] === this.suscriberToken
     ) {
-      return queryParams['hub_challenge'];
+      res
+        .setHeader('Content-Type', 'text/plain')
+        .send(queryParams['hub.challenge']);
     }
 
     throw new BadRequestException();
