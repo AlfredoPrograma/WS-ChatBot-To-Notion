@@ -4,6 +4,7 @@ import {
   Controller,
   Get,
   HttpStatus,
+  NotFoundException,
   Query,
   Res,
 } from '@nestjs/common';
@@ -36,6 +37,6 @@ export class MessagesController {
         .send(queryParams['hub.challenge']);
     }
 
-    throw new BadRequestException();
+    throw new NotFoundException();
   }
 }
