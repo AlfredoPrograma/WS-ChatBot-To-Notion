@@ -4,5 +4,7 @@
 */
 
 interface Environment {
+  NOTION_TOKEN: string;
+  NOTION_DATABASE_ID: string;
   NODE_ENV: 'development' | 'production';
 }
