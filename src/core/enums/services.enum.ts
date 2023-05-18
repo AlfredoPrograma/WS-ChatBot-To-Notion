@@ -1,1 +1,3 @@
-export enum Services {}
+export enum Services {
+  NOTION = 'NOTION_SERVICE',
+}
