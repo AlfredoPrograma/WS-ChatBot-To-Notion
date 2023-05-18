@@ -12,14 +12,15 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
-import { MessagesService } from './messages.service';
+import { HttpService } from '@nestjs/axios';
+import { map, tap } from 'rxjs';
 
 @Controller('messages')
 export class MessagesController {
   private readonly suscriberToken: string;
 
   constructor(
-    private readonly messagesService: MessagesService,
+    private readonly httpService: HttpService,
     private readonly configService: ConfigService<Environment>,
   ) {
     this.suscriberToken = this.configService.get('SUSCRIBER_TOKEN');
@@ -53,5 +54,13 @@ export class MessagesController {
 
     console.log('MESSAGES');
     console.log(body.entry[0].changes[0].value.messages);
+
+    this.httpService
+      .post('http://localhost:3001/api/v1/messages', body, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      .pipe(tap((response) => console.log(response)));
   }
 }
