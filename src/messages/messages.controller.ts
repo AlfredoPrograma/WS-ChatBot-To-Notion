@@ -19,6 +19,7 @@ import { catchError, map } from 'rxjs';
 @Controller('messages')
 export class MessagesController {
   private readonly suscriberToken: string;
+  private readonly wsToNotionApiUrl: string;
   private readonly messages: unknown[] = [];
 
   constructor(
@@ -26,6 +27,7 @@ export class MessagesController {
     private readonly configService: ConfigService<Environment>,
   ) {
     this.suscriberToken = this.configService.get('SUSCRIBER_TOKEN');
+    this.wsToNotionApiUrl = this.configService.get('WS_TO_NOTION_API_URL');
   }
 
   @Get('/webhook')
@@ -50,7 +52,7 @@ export class MessagesController {
   async receiveMessage(@Body() body: unknown): Promise<unknown> {
     console.log('Sending');
     return this.httpService
-      .post('http://localhost:3001/api/v1/messages', body, {
+      .post(this.wsToNotionApiUrl, body, {
         headers: {
           'Content-Type': 'application/json',
         },
