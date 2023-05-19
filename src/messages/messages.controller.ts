@@ -50,7 +50,8 @@ export class MessagesController {
   @Post('/webhook')
   @HttpCode(HttpStatus.NO_CONTENT)
   async receiveMessage(@Body() body: unknown): Promise<unknown> {
-    console.log('Sending');
+    console.info('Sending message');
+
     return this.httpService
       .post(this.wsToNotionApiUrl, body, {
         headers: {
@@ -58,10 +59,10 @@ export class MessagesController {
         },
       })
       .pipe(
-        map((response) => {
-          this.messages.push(response.data);
-          console.log('Sent');
+        map(() => {
+          this.messages.push(body);
 
+          console.info('Message sent');
           return;
         }),
       )
@@ -70,5 +71,10 @@ export class MessagesController {
           throw new ForbiddenException();
         }),
       );
+  }
+
+  @Get('/list')
+  retrieveMessages(): unknown[] {
+    return this.messages;
   }
 }
