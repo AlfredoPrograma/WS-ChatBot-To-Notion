@@ -14,11 +14,12 @@ import {
 import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
-import { catchError, map, tap } from 'rxjs';
+import { catchError, map } from 'rxjs';
 
 @Controller('messages')
 export class MessagesController {
   private readonly suscriberToken: string;
+  private readonly messages: unknown[] = [];
 
   constructor(
     private readonly httpService: HttpService,
@@ -46,7 +47,7 @@ export class MessagesController {
 
   @Post('/webhook')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async receiveMessage(@Body() body: any): Promise<any> {
+  async receiveMessage(@Body() body: unknown): Promise<unknown> {
     console.log('Sending');
     return this.httpService
       .post('http://localhost:3001/api/v1/messages', body, {
@@ -54,7 +55,14 @@ export class MessagesController {
           'Content-Type': 'application/json',
         },
       })
-      .pipe(map(() => console.log('Sent')))
+      .pipe(
+        map((response) => {
+          this.messages.push(response.data);
+          console.log('Sent');
+
+          return;
+        }),
+      )
       .pipe(
         catchError(() => {
           throw new ForbiddenException();
