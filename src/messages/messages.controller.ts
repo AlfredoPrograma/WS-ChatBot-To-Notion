@@ -1,4 +1,4 @@
-import { SuscribeMessagesWeebhokQueryParams } from '@/core/interfaces/messages';
+import { SuscribeMessagesWeebhokQueryParams } from '@/core/interfaces/webhooks';
 import {
   BadRequestException,
   Body,
