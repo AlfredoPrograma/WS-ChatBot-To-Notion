@@ -1,36 +1,27 @@
 import { SuscribeMessagesWeebhokQueryParams } from '@/core/interfaces/messages';
 import {
+  BadRequestException,
   Body,
   Controller,
-  ForbiddenException,
   Get,
   HttpCode,
   HttpStatus,
-  NotFoundException,
   Post,
   Query,
   Res,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
-import { HttpService } from '@nestjs/axios';
-import { catchError, map } from 'rxjs';
 
-@Controller('messages')
+@Controller('webhooks')
 export class MessagesController {
   private readonly suscriberToken: string;
-  private readonly wsToNotionApiUrl: string;
-  private readonly messages: unknown[] = [];
 
-  constructor(
-    private readonly httpService: HttpService,
-    private readonly configService: ConfigService<Environment>,
-  ) {
+  constructor(private readonly configService: ConfigService<Environment>) {
     this.suscriberToken = this.configService.get('SUSCRIBER_TOKEN');
-    this.wsToNotionApiUrl = this.configService.get('WS_TO_NOTION_API_URL');
   }
 
-  @Get('/webhook')
+  @Get('/')
   suscribe(
     @Query() queryParams: SuscribeMessagesWeebhokQueryParams,
     @Res() res: Response,
@@ -44,37 +35,12 @@ export class MessagesController {
         .send(queryParams['hub.challenge']);
     }
 
-    throw new NotFoundException();
+    throw new BadRequestException();
   }
 
-  @Post('/webhook')
+  @Post('/')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async receiveMessage(@Body() body: unknown): Promise<unknown> {
-    console.info('Sending message');
-
-    return this.httpService
-      .post(this.wsToNotionApiUrl, body, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-      .pipe(
-        map(() => {
-          this.messages.push(body);
-
-          console.info('Message sent');
-          return;
-        }),
-      )
-      .pipe(
-        catchError(() => {
-          throw new ForbiddenException();
-        }),
-      );
-  }
-
-  @Get('/list')
-  retrieveMessages(): unknown[] {
-    return this.messages;
+  async receiveMessage(@Body() body: unknown) {
+    console.log(body);
   }
 }

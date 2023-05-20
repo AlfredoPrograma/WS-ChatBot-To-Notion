@@ -6,5 +6,4 @@
 interface Environment {
   SUSCRIBER_TOKEN: string;
   NODE_ENV: 'development' | 'production';
-  WS_TO_NOTION_API_URL: string;
 }
