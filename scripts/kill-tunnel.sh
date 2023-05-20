@@ -1,0 +1,1 @@
+ssh root@157.230.55.115 fuser -k 3000/tcp
